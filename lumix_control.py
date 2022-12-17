@@ -260,12 +260,10 @@ class CameraControl:
         resp_num_pics = r.get(self.baseurl, {"mode": "get_content_info"})
         x = xml.dom.minidom.parseString(resp_num_pics.text)
         num_pics = int(x.getElementsByTagName('total_content_number')[0].firstChild.nodeValue)
-        print(num_pics)
         page_size = 15
         start = 0
         num_to_download = min(page_size, num_pics-start)
         cam_ip = self.baseurl.split("/")[2]
-        print(cam_ip)
         soap_connection = http.client.HTTPConnection(cam_ip, 60606)
         soap_data = '''<?xml version="1.0" encoding="utf-8"?>
             <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
