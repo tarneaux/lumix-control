@@ -3,6 +3,7 @@ from urllib import request
 import xml.dom.minidom
 import http.client
 import os
+import re
 
 class CameraControl:
     def __init__(self, cam_ip):
@@ -254,7 +255,7 @@ class CameraControl:
         resp = r.get(self.baseurl, params = params)
         return resp
 
-    def get_pics(self, dest, do = True, dl = False):
+    def get_pics(self, dest, do = True, dl = False, regex = ".*"):
         resp = r.get(self.baseurl, params = {"mode": "camcmd", "value": "playmode"})
         resp_num_pics = r.get(self.baseurl, {"mode": "get_content_info"})
         x = xml.dom.minidom.parseString(resp_num_pics.text)
@@ -292,9 +293,13 @@ class CameraControl:
         for res in xml.dom.minidom.parseString(x.getElementsByTagName('Result')[0].firstChild.nodeValue).getElementsByTagName('res'):
             u = res.firstChild.nodeValue
             l = u[u.rindex('/') + 1:]
-            if (l.startswith("DO") and do) or (l.startswith("DL") and dl) :
-                print("downloading ", l)
-                request.urlretrieve(u, os.path.join(dest, l))
+            if ((l.startswith("DO") and do) or (l.startswith("DL") and dl)):
+                if re.match(regex, l):
+                    print("downloading ", l)
+                    request.urlretrieve(u, os.path.join(dest, l))
+                else:
+                    print("skipping ", l)
+
         start += 1
 
     def check_response(self, resp):
