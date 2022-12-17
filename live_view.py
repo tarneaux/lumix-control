@@ -46,13 +46,18 @@ def daemon():
             print('no end of jpeg found from stream')
             continue
         img = Image.open(io.BytesIO(data))
-        img_widget = ImageTk.PhotoImage(img)
+        try:
+            img_widget = ImageTk.PhotoImage(img)
+        except (RuntimeError, AttributeError):
+            print("Window closed, exiting.")
+            exit(0)
         label.configure(image=img_widget)
         label.image = img_widget
-        print("refreshed")
 
 
-Thread(target=daemon).start()
+t = Thread(target=daemon)
+t.start()
 
 root.mainloop()
 
+t.join()
