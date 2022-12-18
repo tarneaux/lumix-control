@@ -9,7 +9,7 @@ def convert_to_png(input_file, output_file):
     os.system("darktable-cli " + input_file + " " + output_file)
 
 
-def convert_all_files(input_folder, output_folder):
+def convert_all_files(input_folder, output_folder, skip_existing=True):
     # get all the files in the input folder
     files = os.listdir(input_folder)
 
@@ -21,6 +21,9 @@ def convert_all_files(input_folder, output_folder):
         # check if the file is a raw file
         if re.search(".*\\.RAW", file):
             # convert the file to a png
+            if os.path.isfile(output_folder + file_name + ".png") and skip_existing:
+                print("File " + file_name + ".png already exists")
+                continue
             convert_to_png(os.path.join(input_folder + file), os.path.join(output_folder + file_name + ".png"))
 
 if __name__ == "__main__":
