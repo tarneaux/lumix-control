@@ -1,7 +1,7 @@
 import argparse
-import download
+from . import download
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description="Lumix Control")
     command = parser.add_subparsers(title="Command", dest="command")
     command.required = True
@@ -11,4 +11,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.command == "download":
         download.main(args)
+    elif args.command == "convert":
+        print("Not implemented yet, sorry")
 
+if __name__ == "__main__":
+    main()
