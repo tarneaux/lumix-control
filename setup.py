@@ -1,11 +1,10 @@
-import os
 import setuptools
 
 requirements = open('requirements.txt').read().splitlines()
 
 setuptools.setup(
     name='lumix_control',
-    version='0.0.1',
+    version='0.0.2',
     author='tarneaux',
     author_email='tarneo@tarneo.fr',
     description='Control Panasonic Lumix cameras',
