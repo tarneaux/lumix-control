@@ -56,7 +56,7 @@ def list_files():
     return files
 
 
-def start_connection():
+def start_connection(_): # argument used by wifi version
     check_connected()
     mount()
 
@@ -70,8 +70,11 @@ def copy_file(file, destination):
     debug(f"Copying {file} to {destination}")
     shutil.copy2(file, destination)
 
-def get_file_size(file):
+def get_file_size(file: str) -> int:
     return os.path.getsize(file)
 
-def get_file_mtime(file):
+def get_file_mtime(file: str) -> float:
     return os.path.getmtime(file)
+
+def get_dest_name(file: str) -> str:
+    return os.path.basename(file)

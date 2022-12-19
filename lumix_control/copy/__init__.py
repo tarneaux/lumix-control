@@ -19,14 +19,14 @@ def make_parser(download_parser: argparse.ArgumentParser):
     add_args("-x", "--if-exists", help="What to do if file already exists", choices=['skip', 'overwrite', 'rename'], default='rename', type=str)
 
     # Arguments for wifi only
-    wifi.add_argument('-i', '--ip', help='IP address of camera', required=True, type=str)
+    wifi.add_argument('-i', '--ip', help='IP address of camera', type=str, metavar='IP', dest='ip', default="192.168.54.1")
 
 
 def main(args):
     if args.conn_type == 'wifi':
-        from ..copy.wifi import start_connection, list_files, colors, copy_file, get_file_size, get_file_mtime
+        from ..copy.wifi import start_connection, list_files, colors, copy_file, get_file_size, get_file_mtime, end_connection, get_dest_name
     else:
-        from ..copy.usb import start_connection, list_files, colors, copy_file, get_file_size, get_file_mtime
+        from ..copy.usb import start_connection, list_files, colors, copy_file, get_file_size, get_file_mtime, end_connection, get_dest_name
 
     colors.verbose = args.verbose
     debug = colors.debug
@@ -35,7 +35,7 @@ def main(args):
         check_darktable(debug)
 
     debug('Starting connection')
-    start_connection()
+    args.ip = start_connection(args.ip)
     debug('Connection started')
 
     debug('Listing files on camera')
@@ -43,7 +43,7 @@ def main(args):
     debug(f'Found {len(files)} files')
 
     debug('Filtering files using regexp')
-    files = filter_files(files, args, debug, get_file_size, get_file_mtime)
+    files = filter_files(files, args, debug, get_file_size, get_file_mtime, get_dest_name)
     debug(f'Found {len(files)} files')
     
     debug('Copying files')
@@ -54,6 +54,7 @@ def main(args):
         if not args.verbose:
             print("\33[2K\r", end='')
             print(f'\rCopying {file.split("/")[-1]} ({i}/{len(files)}) ({human_readable_size(file_size)}) ', end='')
+        debug(f'Copying {file} to {output_file}')
         copy_file(file, output_file)
     if not args.verbose:
         print("\33[2K\r", end='')
@@ -63,7 +64,7 @@ def main(args):
     if args.convert:
         debug('Converting raw files to jpg')
         output_extension = args.convert
-        files_to_convert = [output_file for file, output_file in files if file_type_match('raw', output_file)]
+        files_to_convert = [output_file for _, output_file in files if file_type_match('raw', output_file)]
         for i, file in enumerate(files_to_convert):
                 if not args.verbose:
                     print("\33[2K\r", end='')
@@ -75,6 +76,7 @@ def main(args):
             print("\33[2K\r", end='')
             print(f'Converted {len(files_to_convert)} files')
         debug('Finished converting raw files')
+        end_connection()
 
 
 
@@ -96,7 +98,7 @@ def check_darktable(debug):
 def darktable_convert(input_file: str, output_file: str):
     subprocess.call(['darktable-cli', input_file, output_file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def filter_files(files: list, args: argparse.Namespace, debug, get_file_size, get_file_mtime):
+def filter_files(files: list, args: argparse.Namespace, debug, get_file_size, get_file_mtime, get_dest_name):
     debug(f'Filtering files by extension: {args.extension}')
     # Used to check if the file exists locally
     debug(f'Checking if output directory exists')
@@ -106,11 +108,11 @@ def filter_files(files: list, args: argparse.Namespace, debug, get_file_size, ge
     debug(f'Output directory exists')
     output = []
     for file in files:
-        if not file_type_match(file, args.extension):
+        if not file_type_match(args.extension, file):
             debug(f'Skipping file {file} because it does not match extension {args.extension}')
             continue
-        output_file = os.path.join(args.output, file.split('/')[-1])
-        if os.path.isfile(output_file) and os.path.getsize(output_file) == get_file_size(file) and os.path.getmtime(output_file) == get_file_mtime(file):
+        output_file = os.path.join(args.output, get_dest_name(file))
+        if os.path.isfile(output_file) and os.path.getsize(output_file) == get_file_size(file) and (args.conn_type == 'wifi' or os.path.getmtime(output_file) == get_file_mtime(file)):
             debug(f'Skipping file {file} because it already exists locally (same size and modification time)')
             continue
         if os.path.isfile(output_file):
@@ -129,6 +131,7 @@ def filter_files(files: list, args: argparse.Namespace, debug, get_file_size, ge
             elif args.if_exists == 'overwrite':
                 debug(f'Overwriting file {file}')
         output.append((file, output_file))
+        debug(f'Adding file {file} to output list with output file {output_file}')
     return output
 
 

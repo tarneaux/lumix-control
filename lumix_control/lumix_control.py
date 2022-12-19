@@ -3,7 +3,7 @@ import requests
 from urllib import request
 import xml.dom.minidom
 import http.client
-import os
+
 
 class CameraControl:
     def __init__(self, cam_ip):
@@ -290,8 +290,7 @@ class CameraControl:
 
     def download_picture(self, url, dest):
         r.get(self.baseurl, params = {"mode": "camcmd", "value": "playmode"})
-        l = url[url.rindex('/') + 1:]
-        request.urlretrieve(url, os.path.join(dest, l))
+        request.urlretrieve(url, dest)
 
     def get_remote_size(self, url):
         head = requests.head(url)
@@ -304,6 +303,9 @@ class CameraControl:
         else:
             print (resp.text)
             return False
+    
+    def close(self):
+        del self
 
 if __name__ == "__main__":
     IP = "10.0.1.105"
