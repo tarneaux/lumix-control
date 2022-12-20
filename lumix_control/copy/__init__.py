@@ -62,7 +62,7 @@ def main(args):
     debug('Finished copying files')
 
     if args.convert:
-        debug('Converting raw files to jpg')
+        debug(f'Converting raw files to {args.convert}')
         output_extension = args.convert
         files_to_convert = [output_file for _, output_file in files if file_type_match('raw', output_file)]
         for i, file in enumerate(files_to_convert):
