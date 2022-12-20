@@ -18,7 +18,8 @@ If the `lumix-control` command is not found, try adding ~/.local/bin/ to your `P
 If this still doesn't work, open an [issue](https://github.com/tarneaux/lumix-control/issues)
 
 # Features
-- [x] Copying pictures from camera to computer
+- [x] Copy pictures from camera to computer
+  - [ ] Select which pictures to copy
 - [ ] Convert pictures to PNG or JPG format
 - [ ] Geotag pictures on the computer
 
