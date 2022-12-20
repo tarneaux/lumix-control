@@ -20,7 +20,6 @@ If this still doesn't work, open an [issue](https://github.com/tarneaux/lumix-co
 # Features
 - [x] Copy pictures from camera to computer
   - [ ] Select which pictures to copy
-- [ ] Convert pictures to PNG or JPG format
 - [ ] Geotag pictures on the computer
 
 # Todo
