@@ -25,3 +25,4 @@ If this still doesn't work, open an [issue](https://github.com/tarneaux/lumix-co
 
 # Todo
 - [ ] tests
+- [ ] auto-build python package
