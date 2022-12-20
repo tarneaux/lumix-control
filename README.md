@@ -1,5 +1,6 @@
 # lumix-control
 A python library to control the lumix DMC-GX80W using wifi
+> :warning: **lumix-control is still in early stages of development. All features and commands are still subject to changes.**
 
 ## Installing
 ```bash
@@ -15,3 +16,11 @@ See `lumix-control -h`
 If the `lumix-control` command is not found, try adding ~/.local/bin/ to your `PATH`.
 
 If this still doesn't work, open an [issue](https://github.com/tarneaux/lumix-control/issues)
+
+# Features
+- [x] Copying pictures from camera to computer
+- [ ] Convert pictures to PNG or JPG format
+- [ ] Geotag pictures on the computer
+
+# Todo
+- [ ] tests
